@@ -1,0 +1,18 @@
+{
+  "name": "discord-login",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:client": "cd frontend && yarn dev",
+    "start:server": "cd api && yarn dev",
+    "start": "concurrently \"yarn start:client\" \"yarn start:server\"",
+    "postinstall": "(cd api && yarn); (cd frontend && yarn);"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  }
+}
