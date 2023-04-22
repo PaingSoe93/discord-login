@@ -1,6 +1,6 @@
 # Discord Login with Fatisfy and Supabase
 
-This project was generated with [Fastify](https://www.fastify.io/)
+This project was developed with [Fastify](https://www.fastify.io/)
 
 ## Prerequisites
 
