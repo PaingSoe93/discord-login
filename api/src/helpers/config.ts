@@ -3,60 +3,62 @@ import {
   FastifyReply,
   FastifyRequest,
   fastify,
-} from 'fastify';
-import pino from 'pino';
-import dotenv from 'dotenv';
-import {} from '@fastify/jwt';
-import {} from 'fastify-supabase';
-import { FastifySwaggerOptions, SwaggerOptions } from '@fastify/swagger';
-import {} from '@fastify/swagger-ui';
+} from "fastify";
+import pino from "pino";
+import dotenv from "dotenv";
+import {} from "@fastify/jwt";
+import {} from "fastify-supabase";
+import {} from "@fastify/swagger";
+import {} from "@fastify/swagger-ui";
+import { authenticate } from "./auth.middleware";
 
 const startServer = () => {
   dotenv.config();
   const server = fastify({
-    logger: pino({ level: 'info' }),
+    logger: pino({ level: "info" }),
   });
-  server.register(require('@fastify/cors'));
-  server.register(require('@fastify/helmet'), {
+  server.register(require("@fastify/cors"));
+  server.register(require("@fastify/helmet"), {
     global: true,
   });
-  server.register(require('@fastify/jwt'), {
+  server.register(require("@fastify/jwt"), {
     secret: process.env.JWT_SECRET,
   });
+  server.addHook("onRequest", authenticate);
   return server;
 };
 const connectSupaBase = async (server: FastifyInstance) => {
-  server.register(require('fastify-supabase'), {
+  server.register(require("fastify-supabase"), {
     supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     supabaseUrl: process.env.SUPABASE_URL,
   });
 };
 
 const setUpSwagger = async (server: FastifyInstance) => {
-  await server.register(require('@fastify/swagger'), {
+  await server.register(require("@fastify/swagger"), {
     swagger: {
       info: {
-        title: 'Test swagger',
-        description: 'Testing the Fastify swagger API',
-        version: '0.1.0',
+        title: "Test swagger",
+        description: "Testing the Fastify swagger API",
+        version: "0.1.0",
       },
-      host: 'localhost:8000',
-      schemes: ['http'],
-      consumes: ['application/json'],
-      produces: ['application/json'],
+      host: "localhost:8000",
+      schemes: ["http"],
+      consumes: ["application/json"],
+      produces: ["application/json"],
       securityDefinitions: {
         Authorization: {
-          type: 'apiKey',
-          name: 'Authorization',
-          in: 'header',
+          type: "apiKey",
+          name: "Authorization",
+          in: "header",
         },
       },
     },
   });
-  await server.register(require('@fastify/swagger-ui'), {
-    routePrefix: '/docs',
+  await server.register(require("@fastify/swagger-ui"), {
+    routePrefix: "/docs",
     uiConfig: {
-      docExpansion: 'full',
+      docExpansion: "full",
       deepLinking: false,
     },
     uiHooks: {

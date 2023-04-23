@@ -1,38 +1,39 @@
-import { FastifyInstance } from 'fastify';
-import * as controllers from '../controllers';
-import { AuthRequest, AuthRequestType, User, UserType } from '../schema';
-import { authenticate } from '../helpers/auth.middleware';
-import { Type } from '@sinclair/typebox';
+import { FastifyInstance } from "fastify";
+import { UserController } from "../controllers";
+import { AuthRequest, AuthRequestType, User } from "../schema";
+import { Type } from "@sinclair/typebox";
 
 export const userRoutes = async (fastify: FastifyInstance) => {
-  fastify.route<{ Body: AuthRequestType }>({
-    method: 'POST',
-    url: '/auth/discord',
-    schema: {
-      body: AuthRequest,
-      response: {
-        200: AuthRequest,
-      },
-      tags: ['User'],
-    },
-    handler: controllers.Auth(fastify),
-  });
-
+  fastify.decorateRequest("protected", "hello");
   fastify.route({
-    method: 'GET',
-    url: '/users',
-    preHandler: authenticate,
+    method: "GET",
+    url: "/users",
     schema: {
       response: {
         200: Type.Array(User),
       },
-      tags: ['User'],
+      tags: ["User"],
       security: [
         {
           Authorization: [],
         },
       ],
     },
-    handler: controllers.getUsers(fastify),
+    handler: UserController.getUsers,
+  });
+};
+
+export const userAuthRoutes = async (fastify: FastifyInstance) => {
+  fastify.route<{ Body: AuthRequestType }>({
+    method: "POST",
+    url: "/auth/discord",
+    schema: {
+      body: AuthRequest,
+      response: {
+        200: AuthRequest,
+      },
+      tags: ["User"],
+    },
+    handler: UserController.Auth,
   });
 };
